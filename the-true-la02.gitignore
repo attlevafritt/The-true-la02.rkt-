@@ -203,22 +203,37 @@
 
 (occurs? 5 '(1 2 3 4))
 
+;;UPPGIFT 12 
 
+;;Test 1 
+(define subst-all1
+  (lambda (s-out s-in the-list) 
+    (if (not (occurs? s-out the-list))
+        the-list
+        (if (eq? s-out (car (cdr the-list)))
+            (cons s-in (subst-all s-out s-in (cdr the-list)))
+            (if (eq? s-out (cdr (cdr the-list)))
+                (cons s-in (subst-all s-out s-in (cdr the-list)))
+                (subst-all s-out s-in (cdr the-list)))))))
 
+;;Test 2 
+(define subst-all2 
+  (lambda (s-out s-in the-list)
+    (cond [(null? the-list) '()]
+          [(atom? (cdr the-list)) 
+           (if (eq? (cdr the-list) s-out)
+               (mend-lists (testing s-out s-in (car the-list)) s-in))]
+          [(not (occurs? s-out the-list)) the-list]
+          [(or (pair? (car the-list)) (list? (car the-list))) 
+           (cons (testing s-out s-in (car the-list)) (testing s-out s-in (cdr the-list)))])))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(define subst-all
+  (lambda (s-out s-in the-list)
+    (if (not (occurs? s-out the-list))
+        the-list
+        (if (eq? (subst-all s-out s-in (car the-list)) s-out)
+            (subst-all s-out s-in (mend-lists (list s-in) (cdr the-list)))
+             (if (eq? (subst-all s-out s-in (cdr the-list)) s-out)
+                 (subst-all s-out s-in (mend-lists (list s-in) (cdr the-list)))
+                 ((subst-all s-out s-in (car the-list)) (subst-all s-out s-in (cdr the-list)))
+                 )))))
